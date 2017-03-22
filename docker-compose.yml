@@ -21,3 +21,13 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_BROKER_ID: 0
       KAFKA_LOG_DIRS: /kafka/kafka-logs
+  kafka-rest:
+    image: prozzie-rest-proxy:latest
+    restart: always
+    depends_on:
+      - zookeeper
+      - kafka 
+    ports:
+      - 8082:8082
+    environment:
+      KAFKAREST_HEAP_OPTS: -Xmx1g -Xms1g

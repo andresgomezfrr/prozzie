@@ -42,14 +42,17 @@ If you want remove the prozzie, you can execute:
    docker-compose down
    ```
 
-### Components
+### Docker Components
 
 Currently, the prozzie has multiple services to run:
 
  - [Zookeeper](https://hub.docker.com/_/zookeeper/)
  - [Kafka](https://hub.docker.com/r/wurstmeister/kafka/)
+ - [Confluent Rest Proxy](https://github.com/wizzie-io/prozzie/tree/master/dockers/confluent-rest-proxy/)
 
 ### Supported Protocols
 
 - [x] Kafka
-- [ ] HTTP
+- [x] [JSON over HTTP](http://docs.confluent.io/3.0.0/kafka-rest/docs/intro.html#produce-and-consume-json-messages)
+- [x] [Avro over HTTP](http://docs.confluent.io/3.0.0/kafka-rest/docs/intro.html#produce-and-consume-avro-messages)
+- [x] [Binary over HTTP](http://docs.confluent.io/3.0.0/kafka-rest/docs/intro.html#produce-and-consume-binary-messages)
