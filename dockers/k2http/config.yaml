@@ -1,0 +1,23 @@
+pipeline:
+  queue: ${PIPELINE_QUEUE} 
+  backoff: ${PIPELINE_BACKOFF}
+  retries: ${PIPELINE_RETRIES}
+
+limiter:
+  max_messages: ${LIMITER_MAX_MESSAGES}
+  # max_bytes: 5242880
+
+kafka:
+  broker: "kafka:9092"
+  consumergroup: "k2http"
+  topics: ${KAFKA_TOPICS_ENV}
+
+batch:
+  workers: ${BATCH_WORKERS}
+  size: ${BATCH_SIZE}
+  timeoutMillis: ${BATCH_TIMEOUT_MS}
+  deflate: ${BATCH_DEFLATE}
+http:
+  workers: ${HTTP_WORKERS}
+  url: "http://localhost:8888"
+  insecure: ${HTTP_INSECURE}
