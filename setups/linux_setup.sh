@@ -9,20 +9,22 @@ yellow="\e[1;33m"
 white="\e[1;37m"
 normal="\e[m"
 
-# Operative System
-OS=$(lsb_release -si)
+. /etc/os-release
+
 # Architecture
 ARCH=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
-# OS Version
-VER=$(lsb_release -sr)
-# OS Name
-NAME=$(lsb_release -sc)
+
 # List of needed depedencies for prozzie
 NEEDED_DEPENDENCIES="curl jq wget unzip"
 # List of installed dependencies
 INSTALLED_DEPENDENCIES=""
 # Package manager for install, uninstall and update
 PKG_MANAGER=""
+
+ID=${ID,,}
+
+# Prefix installation path
+PREFIX="/usr/local"
 
 # log function
 function log {
@@ -48,6 +50,7 @@ function log {
   esac
 }
 
+# Wizzie Prozzie banner! :D
 function show_banner {
   printf " __          ___         _        _____                  _      \n \ \        / (_)       (_)      |  __ \                (_)     \n  \ \  /\  / / _ _________  ___  | |__) | __ ___ _________  ___ \n   \ \/  \/ / | |_  /_  / |/ _ \ |  ___/ '__/ _ \_  /_  / |/ _ \ \n    \  /\  /  | |/ / / /| |  __/ | |   | | | (_) / / / /| |  __/\n     \/  \/   |_/___/___|_|\___| |_|   |_|  \___/___/___|_|\___|\n\n"
 }
@@ -86,32 +89,55 @@ function update {
       printf "Done!\n"
     ;;
     *)
-      log error "Usage: update"
+      log error "Usage: update\n"
     ;;
   esac
 
 }
+
+if [[ $EUID -ne 0 ]]; then
+  log warn "You must be a root user for running this script. Please use sudo\n"
+  exit 1
+fi
 
 # Show "Wizzie Prozzie" banner
 show_banner
 
 # Print user system information
 printf "System information: \n\n"
-printf "  OS: $OS \n  Version: $VER \n  Name: $NAME\n\n"
+printf "  OS: $PRETTY_NAME\n  Architecture: $ARCH\n\n"
 
 # Check architecture
 if [[ $ARCH -eq 64 ]]; then
 
+  read -p "Where do you want install prozzie? [${PREFIX}] (You can set path to $HOME/.local if you don't have privileges): " -r
+  printf "\n"
+
+  if [[ ! -z $REPLY ]]; then
+    if [[ ! -d $REPLY ]]; then
+      log error "The directory [$REPLY] doesn't exist. Re-run Prozzie installer and enter a valid path.\n"
+      exit 1
+    else
+      PREFIX=$REPLY
+    fi
+  fi
+
+  log info "Prozzie will be installed in: [$PREFIX]\n"
+
   # Set PKG_MANAGER first time
-  case $OS in
-    Debian|Ubuntu)
+  case $ID in
+    debian|ubuntu)
       PKG_MANAGER="apt-get"
     ;;
-    CentOS)
+    centos)
       PKG_MANAGER="yum"
     ;;
-    Fedora)
+    fedora)
       PKG_MANAGER="dnf"
+    ;;
+    *)
+      log error "This linux distribution is not supported! You need Ubuntu, Debian, Fedora or CentOS linux distribution\n"
+      exit 1
     ;;
   esac
 
@@ -127,7 +153,7 @@ if [[ $ARCH -eq 64 ]]; then
     if [[ $? -eq 1 ]]; then
 
       # CentOS systems only
-      if [[ $DEPENDENCY == jq && $OS == CentOS ]]; then
+      if [[ $DEPENDENCY == jq && $ID == centos ]]; then
         install epel-release
       fi
 
@@ -143,7 +169,7 @@ if [[ $ARCH -eq 64 ]]; then
     log warn "Docker is not installed!\n"
     log info "Initializing docker installation!\n"
 
-    if [[ $OS =~ ^(Ubuntu|Debian)$ ]]; then
+    if [[ $ID =~ ^\"?(ubuntu|debian)\"?$ ]]; then
       log info "Installing packages to allow apt to use repository over HTTPS..."
       sudo apt-get install -y \
         apt-transport-https \
@@ -152,14 +178,14 @@ if [[ $ARCH -eq 64 ]]; then
     fi
 
     # Install docker dependencies
-    case $OS in
-      Debian)
-          if [[ $VER == [87].* ]]; then
+    case $ID in
+      debian)
+          if [[ $VERSION_ID =~ ^\"?[87].*\"?$ ]]; then
 
             # Install packages to allow apt to use a repository over HTTPS:
-            if [[ "$NAME" == "wheezy" ]]; then
+            if [[ ${VERSION,,} =~ ^\"?.*whezzy.*\"?$ ]]; then
                install python-software-properties &> /dev/null
-            elif [[ "$NAME" == "stretch" || "$NAME" == "jessie" ]]; then
+            elif [[ ${VERSION,,} =~ ^\"?.*stretch.*\"?$ || $VERSION =~ ^\"?.*jessie.*\"?$ ]]; then
                install software-properties-common &> /dev/null
             fi
 
@@ -177,14 +203,15 @@ if [[ $ARCH -eq 64 ]]; then
             printf "Done!\n"
 
           else
-            log error "You need Debian 8.0 or 7.7. Your current Debian version is: $VER"
+            log error "You need Debian 8.0 or 7.7. Your current Debian version is: $VERSION_ID\n"
+            exit 1
           fi
       ;;
-      Ubuntu)
-          if [[ $VER == 1[46].* ]]; then
+      ubuntu)
+          if [[ $VERSION_ID =~ ^\"?1[46].*\"?$ ]]; then
 
             # Version 14.04 (Trusty)
-            if [[ $VER == 14.04  ]]; then
+            if [[ ${VERSION_ID,,} =~ ^\"?.*trusty.*\"?$  ]]; then
               sudo apt-get install -y \
                 linux-image-extra-$(uname -r) \
                 linux-image-extra-virtual &> /dev/null
@@ -209,11 +236,12 @@ if [[ $ARCH -eq 64 ]]; then
             printf "Done!\n"
 
           else
-            log error "You need Ubuntu 16.10, 16.04 or 14.04. Your current Ubuntu version is: $VER"
+            log error "You need Ubuntu 16.10, 16.04 or 14.04. Your current Ubuntu version is: $VERSION_ID\n"
+            exit 1
           fi
       ;;
-      CentOS)
-          if [[ $VER == 7.* ]]; then
+      centos)
+          if [[ $VERSION_ID =~ ^\"?7.*\"?$ ]]; then
 
             log info "Installing necessary packages for set up repository..."
             install yum-utils &> /dev/null
@@ -227,11 +255,12 @@ if [[ $ARCH -eq 64 ]]; then
             printf "Done!\n"
 
           else
-            log error "You need CentOS 7. Your current CentOS version is: $VER"
+            log error "You need CentOS 7. Your current CentOS version is: $VERSION_ID\n"
+            exit 1
           fi
       ;;
-      Fedora)
-          if [[ $VER =~ 2[45] ]]; then
+      fedora)
+          if [[ $VERSION_ID =~ ^\"?2[45]\"?$ ]]; then
 
             # Update repository
             update
@@ -248,11 +277,13 @@ if [[ $ARCH -eq 64 ]]; then
             printf "Done!\n"
 
           else
-            log error "You need Fedora 24 or 25. Your current Fedora version is: $VER"
+            log error "You need Fedora 24 or 25. Your current Fedora version is: $VERSION_ID\n"
+            exit 1
           fi
       ;;
       *)
             log error "This linux distribution is not supported! You need Ubuntu, Debian, Fedora or CentOS linux distribution\n"
+            exit 1
       ;;
     esac
 
@@ -268,11 +299,11 @@ if [[ $ARCH -eq 64 ]]; then
     printf "\n\n"
 
     if [[ $REPLY =~ ^[Yy]$ || -z $REPLY ]]; then
-      case $OS in
-        Debian|Ubuntu)
+      case $ID in
+        debian|ubuntu)
           sudo systemctl enable docker &> /dev/null
         ;;
-        Fedora|CentOS)
+        fedora|centos)
           sudo systemctl start docker &> /dev/null
         ;;
       esac
@@ -309,8 +340,8 @@ if [[ $ARCH -eq 64 ]]; then
   printf "Done!\n"
 
   log info "Decompressing..."
-  unzip -j -q -o prozzie.zip -d prozzie &> /dev/null ; rm -rf prozzie.zip
-  printf "Done!\n\n"
+  unzip -q -o prozzie.zip -d $PREFIX/prozzie &> /dev/null ; rm -rf prozzie.zip
+  printf "Done!\n"
 
   # Check installed dependencies
   if ! [[ -z "$INSTALLED_DEPENDENCIES" ]]; then
@@ -329,9 +360,34 @@ if [[ $ARCH -eq 64 ]]; then
 
   fi
 
-  # Start prozzie...
+  log info "Adding start and stop scripts..."
+
+  # Create prozzie/bin directory
+  mkdir -p $PREFIX/prozzie/bin
+
+  echo -e "#!/bin/bash\n\nCURRENT_DIRECTORY=$(pwd) && cd $PREFIX/prozzie
+\ndocker-compose start\n\ncd $CURRENT_DIRECTORY" > $PREFIX/prozzie/bin/start-prozzie.sh
+  sudo chmod +x $PREFIX/prozzie/bin/start-prozzie.sh
+
+  echo -e "#!/bin/bash\n\nCURRENT_DIRECTORY=$(pwd) && cd $PREFIX/prozzie
+\ndocker-compose stop\n\ncd $CURRENT_DIRECTORY" > $PREFIX/prozzie/bin/stop-prozzie.sh
+  sudo chmod +x $PREFIX/prozzie/bin/stop-prozzie.sh
+
+  printf "Done!\n\n"
+
+  if [[ ! -f $PREFIX/bin/prozzie-start ]]; then
+    sudo ln -s $PREFIX/prozzie/bin/start-prozzie.sh $PREFIX/bin/prozzie-start
+  fi
+
+  if [[ ! -f $PREFIX/bin/prozzie-stop ]]; then
+    sudo ln -s $PREFIX/prozzie/bin/stop-prozzie.sh $PREFIX/bin/prozzie-stop
+  fi
+
+  log ok "Prozzie installation is finished!\n"
   log info "Starting Prozzie...\n\n"
-  docker-compose up
+
+  (cd $PREFIX/prozzie; \
+  docker-compose up)
 
 else
   log error "You need 64 bits OS. Your current architecture is: $ARCH"
