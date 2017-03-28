@@ -324,9 +324,9 @@ if [[ $ARCH -eq 64 ]]; then
     log info "Initializing Docker-Compose installation\n"
     # Download latest release (Not for production)
     log info "Downloading latest release of Docker Compose..."
-    sudo curl -s -L "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose &> /dev/null
+    sudo curl -s -L "https://github.com/docker/compose/releases/download/1.11.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose &> /dev/null
     # Add permissions
-    sudo chmod +x /usr/local/bin/docker-compose &> /dev/null
+    sudo chmod +x /usr/bin/docker-compose &> /dev/null
     printf "Done!\n"
   fi
 
@@ -340,7 +340,7 @@ if [[ $ARCH -eq 64 ]]; then
   printf "Done!\n"
 
   log info "Decompressing..."
-  unzip -q -o prozzie.zip -d $PREFIX/prozzie &> /dev/null ; rm -rf prozzie.zip
+  unzip -qj -o prozzie.zip -d $PREFIX/prozzie &> /dev/null ; rm -rf prozzie.zip
   printf "Done!\n"
 
   # Check installed dependencies
@@ -365,22 +365,20 @@ if [[ $ARCH -eq 64 ]]; then
   # Create prozzie/bin directory
   mkdir -p $PREFIX/prozzie/bin
 
-  echo -e "#!/bin/bash\n\nCURRENT_DIRECTORY=$(pwd) && cd $PREFIX/prozzie
-\ndocker-compose start\n\ncd $CURRENT_DIRECTORY" > $PREFIX/prozzie/bin/start-prozzie.sh
+  echo -e "#!/bin/bash\n\n(cd $PREFIX/prozzie ; docker-compose start)" > $PREFIX/prozzie/bin/start-prozzie.sh
   sudo chmod +x $PREFIX/prozzie/bin/start-prozzie.sh
 
-  echo -e "#!/bin/bash\n\nCURRENT_DIRECTORY=$(pwd) && cd $PREFIX/prozzie
-\ndocker-compose stop\n\ncd $CURRENT_DIRECTORY" > $PREFIX/prozzie/bin/stop-prozzie.sh
+  echo -e "#!/bin/bash\n\n(cd $PREFIX/prozzie; docker-compose stop)" > $PREFIX/prozzie/bin/stop-prozzie.sh
   sudo chmod +x $PREFIX/prozzie/bin/stop-prozzie.sh
 
   printf "Done!\n\n"
 
   if [[ ! -f $PREFIX/bin/prozzie-start ]]; then
-    sudo ln -s $PREFIX/prozzie/bin/start-prozzie.sh $PREFIX/bin/prozzie-start
+    sudo ln -s $PREFIX/prozzie/bin/start-prozzie.sh /usr/bin/prozzie-start
   fi
 
   if [[ ! -f $PREFIX/bin/prozzie-stop ]]; then
-    sudo ln -s $PREFIX/prozzie/bin/stop-prozzie.sh $PREFIX/bin/prozzie-stop
+    sudo ln -s $PREFIX/prozzie/bin/stop-prozzie.sh /usr/bin/prozzie-stop
   fi
 
   log ok "Prozzie installation is finished!\n"
