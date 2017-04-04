@@ -15,7 +15,7 @@ normal="\e[m"
 ARCH=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
 
 # List of needed depedencies for prozzie
-NEEDED_DEPENDENCIES="curl jq wget unzip"
+NEEDED_DEPENDENCIES="curl jq wget unzip net-tools"
 # List of installed dependencies
 INSTALLED_DEPENDENCIES=""
 # Package manager for install, uninstall and update
@@ -93,6 +93,23 @@ function update {
     ;;
   esac
 
+}
+
+function valid_ip()
+{
+    local  ip=$1
+    local  stat=1
+
+    if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+        OIFS=$IFS
+        IFS='.'
+        ip=($ip)
+        IFS=$OIFS
+        [[ ${ip[0]} -le 255 && ${ip[1]} -le 255 \
+            && ${ip[2]} -le 255 && ${ip[3]} -le 255 ]]
+        stat=$?
+    fi
+    return $stat
 }
 
 if [[ $EUID -ne 0 ]]; then
@@ -342,6 +359,27 @@ if [[ $ARCH -eq 64 ]]; then
   log info "Decompressing..."
   unzip -qj -o prozzie.zip -d $PREFIX/prozzie &> /dev/null ; rm -rf prozzie.zip
   printf "Done!\n"
+  echo "CLIENT_API_KEY=${CLIENT_API_KEY}" >> $PREFIX/prozzie/.env
+
+  read -p "Do you want discover the IP address automatically? [Y/n]: " -n 1 -r
+  printf "\n"
+
+  if [[ $REPLY =~ ^[Yy]$ || -z $REPLY ]]; then
+    MAIN_INTERFACE=$(route -n | awk '{printf("%s %s\n", $1, $8)}' | grep 0.0.0.0 | awk '{printf("%s", $2)}')
+    INTERFACE_IP=$(ifconfig ${MAIN_INTERFACE} | grep inet | grep -v inet6 | awk '{printf("%s", $2)}' | sed 's/addr://')
+  else
+    read -p "Introduce the IP address: " -r
+    printf "\n\n"
+    INTERFACE_IP=${REPLY}
+  fi
+
+  if valid_ip ${INTERFACE_IP}; then
+    log info "The selected IP address is ${INTERFACE_IP}\n"
+    echo "INTERFACE_IP=${INTERFACE_IP}" >> $PREFIX/prozzie/.env
+  else
+    log error "The selected IP address is wrong format [${INTERFACE_IP}]\n"
+    exit 1
+  fi
 
   # Check installed dependencies
   if ! [[ -z "$INSTALLED_DEPENDENCIES" ]]; then

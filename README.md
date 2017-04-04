@@ -14,7 +14,7 @@ The prozzie works using docker-compose. The prozzie allows us to send data to Wi
 
   * https://docs.docker.com/compose/install/
 
-3. Configure the ${INTERFACE_IP} ENV var inside `.env`
+3. Configure the ${INTERFACE_IP} and ${CLIENT_API_KEY} ENV var inside `.env` 
 
 4. Execute the prozzie
 
