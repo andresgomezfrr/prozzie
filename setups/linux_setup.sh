@@ -353,7 +353,7 @@ if [[ $ARCH -eq 64 ]]; then
 
   # Download of prozzie and installation
   log info "Downloading latest release of Prozzie..."
-  wget $(curl -sL http://api.github.com/repos/wizzie/prozzie/releases/latest | jq .assets[0].browser_download_url | sed "s/\"//g") -O prozzie.zip &> /dev/null
+  wget $(curl -sL http://api.github.com/repos/wizzie-io/prozzie/releases/latest?access_token=4ea54f05cd7111c2e886f2c26f59b99109245053 | jq '(.zipball_url + "?access_token=4ea54f05cd7111c2e886f2c26f59b99109245053")'| sed 's|[",]||g') -O prozzie.zip &> /dev/null
   printf "Done!\n"
 
   log info "Decompressing..."
