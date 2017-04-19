@@ -359,6 +359,7 @@ if [[ $ARCH -eq 64 ]]; then
   log info "Decompressing..."
   unzip -qj -o prozzie.zip -d $PREFIX/prozzie &> /dev/null ; rm -rf prozzie.zip
   printf "Done!\n"
+  rm -f $PREFIX/prozzie/.env
   echo "CLIENT_API_KEY=${CLIENT_API_KEY}" >> $PREFIX/prozzie/.env
 
   read -p "Do you want discover the IP address automatically? [Y/n]: " -n 1 -r
@@ -411,11 +412,11 @@ if [[ $ARCH -eq 64 ]]; then
 
   printf "Done!\n\n"
 
-  if [[ ! -f $PREFIX/bin/prozzie-start ]]; then
+  if [[ ! -f /usr/bin/prozzie-start ]]; then
     sudo ln -s $PREFIX/prozzie/bin/start-prozzie.sh /usr/bin/prozzie-start
   fi
 
-  if [[ ! -f $PREFIX/bin/prozzie-stop ]]; then
+  if [[ ! -f /usr/bin/prozzie-stop ]]; then
     sudo ln -s $PREFIX/prozzie/bin/stop-prozzie.sh /usr/bin/prozzie-stop
   fi
 
