@@ -22,7 +22,7 @@ services:
       KAFKA_BROKER_ID: 0
       KAFKA_LOG_DIRS: /kafka/kafka-logs 
   kafka-rest:
-    image: gcr.io/wizzie-registry/prozzie-rest-proxy:latest
+    image: gcr.io/wizzie-registry/prozzie-rest-proxy:3.2.1-1
     restart: always
     depends_on:
       - zookeeper
