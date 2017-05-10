@@ -37,6 +37,7 @@ services:
     depends_on:
       - kafka
     environment:
+      ZZ_API_KEY: ${CLIENT_API_KEY}
       PIPELINE_QUEUE: 1000
       PIPELINE_BACKOFF: 10
       PIPELINE_RETRIES: 3
@@ -48,4 +49,4 @@ services:
       BATCH_DEFLASE: "false"
       HTTP_WORKERS: 1
       HTTP_INSECURE: "false"
-      KAFKA_TOPICS: "topic1 topic2"
+      KAFKA_TOPICS: "*"
