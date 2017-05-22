@@ -9,7 +9,7 @@ services:
       ZOO_MY_ID: 1
       ZOO_SERVERS: server.1=zookeeper:2888:3888
   kafka:
-    image: wurstmeister/kafka:0.10.1.1
+    image: wurstmeister/kafka:0.10.2.0
     restart: always
     depends_on:
       - zookeeper
