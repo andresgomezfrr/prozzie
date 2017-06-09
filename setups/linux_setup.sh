@@ -135,7 +135,7 @@ if [[ $ARCH -eq 64 ]]; then
       log error "The directory [$REPLY] doesn't exist. Re-run Prozzie installer and enter a valid path.\n"
       exit 1
     else
-      PREFIX=$REPLY
+      PREFIX="$REPLY"
     fi
   fi
 
@@ -357,10 +357,10 @@ if [[ $ARCH -eq 64 ]]; then
   printf "Done!\n"
 
   log info "Decompressing..."
-  unzip -qj -o prozzie.zip -d $PREFIX/prozzie &> /dev/null ; rm -rf prozzie.zip
+  unzip -qj -o prozzie.zip -d "$PREFIX/prozzie" &> /dev/null ; rm -rf prozzie.zip
   printf "Done!\n"
-  rm -f $PREFIX/prozzie/.env
-  echo "CLIENT_API_KEY=${CLIENT_API_KEY}" >> $PREFIX/prozzie/.env
+  rm -f "$PREFIX/prozzie/.env"
+  echo "CLIENT_API_KEY=${CLIENT_API_KEY}" >> "$PREFIX/prozzie/.env"
 
   read -p "Do you want discover the IP address automatically? [Y/n]: " -n 1 -r
   printf "\n"
@@ -376,7 +376,7 @@ if [[ $ARCH -eq 64 ]]; then
 
   if valid_ip ${INTERFACE_IP}; then
     log info "The selected IP address is ${INTERFACE_IP}\n"
-    echo "INTERFACE_IP=${INTERFACE_IP}" >> $PREFIX/prozzie/.env
+    echo "INTERFACE_IP=${INTERFACE_IP}" >> "$PREFIX/prozzie/.env"
   else
     log error "The selected IP address is wrong format [${INTERFACE_IP}]\n"
     exit 1
@@ -402,28 +402,28 @@ if [[ $ARCH -eq 64 ]]; then
   log info "Adding start and stop scripts..."
 
   # Create prozzie/bin directory
-  mkdir -p $PREFIX/prozzie/bin
+  mkdir -p "$PREFIX/prozzie/bin"
 
-  echo -e "#!/bin/bash\n\n(cd $PREFIX/prozzie ; docker-compose start)" > $PREFIX/prozzie/bin/start-prozzie.sh
-  sudo chmod +x $PREFIX/prozzie/bin/start-prozzie.sh
+  echo -e "#!/bin/bash\n\n(cd $PREFIX/prozzie ; docker-compose start)" > "$PREFIX/prozzie/bin/start-prozzie.sh"
+  sudo chmod +x "$PREFIX/prozzie/bin/start-prozzie.sh"
 
-  echo -e "#!/bin/bash\n\n(cd $PREFIX/prozzie; docker-compose stop)" > $PREFIX/prozzie/bin/stop-prozzie.sh
-  sudo chmod +x $PREFIX/prozzie/bin/stop-prozzie.sh
+  echo -e "#!/bin/bash\n\n(cd $PREFIX/prozzie; docker-compose stop)" > "$PREFIX/prozzie/bin/stop-prozzie.sh"
+  sudo chmod +x "$PREFIX/prozzie/bin/stop-prozzie.sh"
 
   printf "Done!\n\n"
 
   if [[ ! -f /usr/bin/prozzie-start ]]; then
-    sudo ln -s $PREFIX/prozzie/bin/start-prozzie.sh /usr/bin/prozzie-start
+    sudo ln -s "$PREFIX/prozzie/bin/start-prozzie.sh" /usr/bin/prozzie-start
   fi
 
   if [[ ! -f /usr/bin/prozzie-stop ]]; then
-    sudo ln -s $PREFIX/prozzie/bin/stop-prozzie.sh /usr/bin/prozzie-stop
+    sudo ln -s "$PREFIX/prozzie/bin/stop-prozzie.sh" /usr/bin/prozzie-stop
   fi
 
   log ok "Prozzie installation is finished!\n"
   log info "Starting Prozzie...\n\n"
 
-  (cd $PREFIX/prozzie; \
+  (cd "$PREFIX/prozzie"; \
   docker-compose up)
 
 else
