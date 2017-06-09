@@ -24,7 +24,7 @@ PKG_MANAGER=""
 ID=${ID,,}
 
 # Prefix installation path
-PREFIX="/usr/local"
+readonly DEFAULT_PREFIX="/usr/local"
 
 # log function
 function log {
@@ -112,6 +112,32 @@ function valid_ip()
     return $stat
 }
 
+# ZZ variables treatment. Checks if an environment variable is defined, and ask
+# user for value if not.
+# After that, save it in docker-compose .env file
+# Arguments:
+#  Variable name
+#  Default if empty text introduced ("" for error raising)
+#  Question text
+function zz_variable () {
+  if [[ -z "${!1}" ]]; then
+    read -p "$3" $1
+  fi
+
+  if [[ -z "${!1}" ]]; then
+    if [[ ! -z "$2" ]]; then
+      read $1 <<< $2
+    else
+      log fail "[${!1}][$2] Empty $1 not allowed"
+      exit 1
+    fi
+  fi
+
+  if [[ $1 != PREFIX ]]; then
+    echo "$1=\"${!1}\"" >> "$PREFIX/prozzie/.env"
+  fi
+}
+
 if [[ $EUID -ne 0 ]]; then
   log warn "You must be a root user for running this script. Please use sudo\n"
   exit 1
@@ -127,16 +153,11 @@ printf "  OS: $PRETTY_NAME\n  Architecture: $ARCH\n\n"
 # Check architecture
 if [[ $ARCH -eq 64 ]]; then
 
-  read -p "Where do you want install prozzie? [${PREFIX}] (You can set path to $HOME/.local if you don't have privileges): " -r
-  printf "\n"
+  zz_variable PREFIX DEFAULT_PREFIX "Where do you want install prozzie? [${PREFIX}] (You can set path to $HOME/.local if you don't have privileges): "
 
-  if [[ ! -z $REPLY ]]; then
-    if [[ ! -d $REPLY ]]; then
-      log error "The directory [$REPLY] doesn't exist. Re-run Prozzie installer and enter a valid path.\n"
-      exit 1
-    else
-      PREFIX="$REPLY"
-    fi
+  if [[ ! -d "$PREFIX" ]]; then
+    log error "The directory [$PREFIX] doesn't exist. Re-run Prozzie installer and enter a valid path.\n"
+    exit 1
   fi
 
   log info "Prozzie will be installed in: [$PREFIX]\n"
@@ -360,7 +381,6 @@ if [[ $ARCH -eq 64 ]]; then
   unzip -qj -o prozzie.zip -d "$PREFIX/prozzie" &> /dev/null ; rm -rf prozzie.zip
   printf "Done!\n"
   rm -f "$PREFIX/prozzie/.env"
-  echo "CLIENT_API_KEY=${CLIENT_API_KEY}" >> "$PREFIX/prozzie/.env"
 
   read -p "Do you want discover the IP address automatically? [Y/n]: " -n 1 -r
   printf "\n"
@@ -368,19 +388,20 @@ if [[ $ARCH -eq 64 ]]; then
   if [[ $REPLY =~ ^[Yy]$ || -z $REPLY ]]; then
     MAIN_INTERFACE=$(route -n | awk '{printf("%s %s\n", $1, $8)}' | grep 0.0.0.0 | awk '{printf("%s", $2)}')
     INTERFACE_IP=$(ifconfig ${MAIN_INTERFACE} | grep inet | grep -v inet6 | awk '{printf("%s", $2)}' | sed 's/addr://')
-  else
-    read -p "Introduce the IP address: " -r
-    printf "\n\n"
-    INTERFACE_IP=${REPLY}
   fi
+
+  zz_variable INTERFACE_IP $INTERFACE_IP "Introduce the IP address: "
+  printf "\n\n"
 
   if valid_ip ${INTERFACE_IP}; then
     log info "The selected IP address is ${INTERFACE_IP}\n"
-    echo "INTERFACE_IP=${INTERFACE_IP}" >> "$PREFIX/prozzie/.env"
   else
     log error "The selected IP address is wrong format [${INTERFACE_IP}]\n"
     exit 1
   fi
+
+  zz_variable CLIENT_API_KEY   "Introduce your client API key: "
+  zz_variable ZZ_HTTP_ENDPOINT "Introduce the data HTTP endpoint URL: "
 
   # Check installed dependencies
   if ! [[ -z "$INSTALLED_DEPENDENCIES" ]]; then

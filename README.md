@@ -14,7 +14,8 @@ The prozzie works using docker-compose. The prozzie allows us to send data to Wi
 
   * https://docs.docker.com/compose/install/
 
-3. Configure the ${INTERFACE_IP} and ${CLIENT_API_KEY} ENV var inside `.env` 
+3. Configure the ${INTERFACE_IP}, ${CLIENT_API_KEY} and ${ZZ_HTTP_ENDPOINT} ENV
+var inside `.env`
 
 4. Execute the prozzie
 
@@ -48,6 +49,7 @@ Currently, the prozzie has multiple services to run:
 
  - [Zookeeper](https://hub.docker.com/_/zookeeper/)
  - [Kafka](https://hub.docker.com/r/wurstmeister/kafka/)
+ - [K2http](https://github.com/wizzie-io/k2http)
  - [Confluent Rest Proxy](https://github.com/wizzie-io/prozzie/tree/master/dockers/confluent-rest-proxy/)
 
 ### Supported Protocols

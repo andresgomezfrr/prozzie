@@ -32,12 +32,16 @@ services:
     environment:
       KAFKAREST_HEAP_OPTS: -Xmx1g -Xms1g
   k2http:
-    image: gcr.io/wizzie-registry/prozzie-k2http:latest
+    image: gcr.io/wizzie-registry/prozzie-k2http:1.3.0
     restart: always
     depends_on:
       - kafka
     environment:
-      ZZ_API_KEY: ${CLIENT_API_KEY}
+      HTTP_POST_PARAMS: "apikey:${CLIENT_API_KEY}"
+      KAFKA_OFFSET_RESET: "earliest"
+      KAFKA_CONSUMER_GROUP: "k2http"
+      KAFKA_BROKERS: "kafka:9092"
+      HTTP_ENDPOINT: "${ZZ_HTTP_ENDPOINT:-http://localhost:8000/v1/data}"
       PIPELINE_QUEUE: 1000
       PIPELINE_BACKOFF: 10
       PIPELINE_RETRIES: 3
