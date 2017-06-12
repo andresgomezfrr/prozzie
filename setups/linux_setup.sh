@@ -95,23 +95,6 @@ function update {
 
 }
 
-function valid_ip()
-{
-    local  ip=$1
-    local  stat=1
-
-    if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-        OIFS=$IFS
-        IFS='.'
-        ip=($ip)
-        IFS=$OIFS
-        [[ ${ip[0]} -le 255 && ${ip[1]} -le 255 \
-            && ${ip[2]} -le 255 && ${ip[3]} -le 255 ]]
-        stat=$?
-    fi
-    return $stat
-}
-
 # ZZ variables treatment. Checks if an environment variable is defined, and ask
 # user for value if not.
 # After that, save it in docker-compose .env file
@@ -392,13 +375,6 @@ if [[ $ARCH -eq 64 ]]; then
 
   zz_variable INTERFACE_IP $INTERFACE_IP "Introduce the IP address: "
   printf "\n\n"
-
-  if valid_ip ${INTERFACE_IP}; then
-    log info "The selected IP address is ${INTERFACE_IP}\n"
-  else
-    log error "The selected IP address is wrong format [${INTERFACE_IP}]\n"
-    exit 1
-  fi
 
   zz_variable CLIENT_API_KEY   "Introduce your client API key: "
   zz_variable ZZ_HTTP_ENDPOINT "Introduce the data HTTP endpoint URL: "
