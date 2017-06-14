@@ -117,7 +117,7 @@ function zz_variable () {
   fi
 
   if [[ $1 != PREFIX ]]; then
-    echo "$1=\"${!1}\"" >> "$PREFIX/prozzie/.env"
+    echo "$1=${!1}" >> "$PREFIX/prozzie/.env"
   fi
 }
 
@@ -373,11 +373,11 @@ if [[ $ARCH -eq 64 ]]; then
     INTERFACE_IP=$(ifconfig ${MAIN_INTERFACE} | grep inet | grep -v inet6 | awk '{printf("%s", $2)}' | sed 's/addr://')
   fi
 
-  zz_variable INTERFACE_IP $INTERFACE_IP "Introduce the IP address: "
+  zz_variable INTERFACE_IP $INTERFACE_IP '' "Introduce the IP address: "
   printf "\n\n"
 
-  zz_variable CLIENT_API_KEY   "Introduce your client API key: "
-  zz_variable ZZ_HTTP_ENDPOINT "Introduce the data HTTP endpoint URL: "
+  zz_variable CLIENT_API_KEY   '' "Introduce your client API key: "
+  zz_variable ZZ_HTTP_ENDPOINT '' "Introduce the data HTTP endpoint URL: "
 
   # Check installed dependencies
   if ! [[ -z "$INSTALLED_DEPENDENCIES" ]]; then
@@ -407,6 +407,9 @@ if [[ $ARCH -eq 64 ]]; then
   echo -e "#!/bin/bash\n\n(cd $PREFIX/prozzie; docker-compose stop)" > "$PREFIX/prozzie/bin/stop-prozzie.sh"
   sudo chmod +x "$PREFIX/prozzie/bin/stop-prozzie.sh"
 
+  echo -e "#!/bin/bash\n\n(docker run -it -e KAFKA_CONNECT_REST=http://${INTERFACE_IP}:8083 gcr.io/wizzie-registry/kafka-connect-cli:1.0.1 sh -c \"kcli \$@\")" > "$PREFIX/prozzie/bin/kcli.sh"
+  sudo chmod +x "$PREFIX/prozzie/bin/kcli.sh"
+
   printf "Done!\n\n"
 
   if [[ ! -f /usr/bin/prozzie-start ]]; then
@@ -415,6 +418,10 @@ if [[ $ARCH -eq 64 ]]; then
 
   if [[ ! -f /usr/bin/prozzie-stop ]]; then
     sudo ln -s "$PREFIX/prozzie/bin/stop-prozzie.sh" /usr/bin/prozzie-stop
+  fi
+
+  if [[ ! -f /usr/bin/kcli ]]; then
+    sudo ln -s "$PREFIX/prozzie/bin/kcli.sh" /usr/bin/kcli
   fi
 
   log ok "Prozzie installation is finished!\n"
