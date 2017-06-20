@@ -136,7 +136,7 @@ printf "  OS: $PRETTY_NAME\n  Architecture: $ARCH\n\n"
 # Check architecture
 if [[ $ARCH -eq 64 ]]; then
 
-  zz_variable PREFIX DEFAULT_PREFIX "Where do you want install prozzie? [${PREFIX}] (You can set path to $HOME/.local if you don't have privileges): "
+  zz_variable PREFIX "${DEFAULT_PREFIX}" "Where do you want install prozzie? [${PREFIX}] (You can set path to $HOME/.local if you don't have privileges): "
 
   if [[ ! -d "$PREFIX" ]]; then
     log error "The directory [$PREFIX] doesn't exist. Re-run Prozzie installer and enter a valid path.\n"
