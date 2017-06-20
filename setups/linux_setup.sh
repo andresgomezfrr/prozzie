@@ -407,7 +407,7 @@ if [[ $ARCH -eq 64 ]]; then
   echo -e "#!/bin/bash\n\n(cd $PREFIX/prozzie; docker-compose stop)" > "$PREFIX/prozzie/bin/stop-prozzie.sh"
   sudo chmod +x "$PREFIX/prozzie/bin/stop-prozzie.sh"
 
-  echo -e "#!/bin/bash\n\n(docker run -it -e KAFKA_CONNECT_REST=http://${INTERFACE_IP}:8083 gcr.io/wizzie-registry/kafka-connect-cli:1.0.1 sh -c \"kcli \$@\")" > "$PREFIX/prozzie/bin/kcli.sh"
+  echo -e "#!/bin/bash\n\ndocker run -i -e KAFKA_CONNECT_REST=http://${INTERFACE_IP}:8083 gcr.io/wizzie-registry/kafka-connect-cli:1.0.1 sh -c \"kcli \$*\"" > "$PREFIX/prozzie/bin/kcli.sh"
   sudo chmod +x "$PREFIX/prozzie/bin/kcli.sh"
 
   printf "Done!\n\n"
