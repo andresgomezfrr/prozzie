@@ -49,11 +49,11 @@ If you want remove the prozzie, you can execute:
 
 Currently, the prozzie has multiple services to run:
 
- - [Zookeeper](https://hub.docker.com/_/zookeeper/)
- - [Kafka](https://hub.docker.com/r/wurstmeister/kafka/)
- - [K2http](https://github.com/wizzie-io/k2http)
- - [Kafka Connect](http://docs.confluent.io/current/connect/index.html)
- - [Confluent Rest Proxy](https://github.com/wizzie-io/prozzie/tree/master/dockers/confluent-rest-proxy/)
+ - [Zookeeper 3.4.10](https://hub.docker.com/_/zookeeper/)
+ - [Kafka 0.10.2.0](https://hub.docker.com/r/wurstmeister/kafka/)
+ - [K2http 1.3.0](https://github.com/wizzie-io/k2http)
+ - [Wizzie Kafka Connect 0.0.1](https://github.com/wizzie-io/kafka-connect-docker)
+ - [Confluent Rest Proxy 3.2.1](https://github.com/wizzie-io/prozzie/tree/master/dockers/confluent-rest-proxy/)
 
 ### Supported Protocols
 
