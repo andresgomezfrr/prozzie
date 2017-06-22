@@ -4,6 +4,12 @@ The prozzie works using docker-compose. The prozzie allows us to send data to Wi
 
 ### Installation
 
+#### Automatic Installation
+
+Use the setup script that is inside the setup folder.
+
+#### Manual Installation
+
 1. Clone
 
   ```
@@ -63,9 +69,12 @@ Currently, the prozzie has multiple services to run:
 - [x] [Binary over HTTP](http://docs.confluent.io/3.0.0/kafka-rest/docs/intro.html#produce-and-consume-binary-messages)
 - [x] [Syslog: UDP, TCP, SSL](https://github.com/jcustenborder/kafka-connect-syslog)
 - [x] [MQTT](https://github.com/evokly/kafka-connect-mqtt)
+- [ ] Netflow
+- [ ] sFlow
+- [ ] SNMP
 
 ### Tools
 
  * **prozzie-start**: Start prozzie script. 
  * **prozzie-stop**: Stop prozzie script.
- * **kcli**: CLI to work with Kafka Connec.
+ * **kcli**: CLI to work with Kafka Connec. Usage: `kcli --help`
