@@ -70,7 +70,7 @@ Currently, the prozzie has multiple services to run:
 - [x] [Syslog: UDP, TCP, SSL](https://github.com/jcustenborder/kafka-connect-syslog)
 - [x] [MQTT](https://github.com/evokly/kafka-connect-mqtt)
 - [ ] Netflow
-- [ ] sFlow
+- [ ] sFlow
 - [ ] SNMP
 
 ### Tools
