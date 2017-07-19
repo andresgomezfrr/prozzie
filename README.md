@@ -1,14 +1,14 @@
 # prozzie
 
-The prozzie works using docker-compose. The prozzie allows us to send data to Wizzie Cloud. It does the authentication, back-pressure, data encryption and data persistent.
+The prozzie works using docker-compose. The prozzie allows us to send data to Wizzie Cloud. It does the authentication, back-pressure, data encryption and data persistence.
 
-### Installation
+## Installation
 
-#### Automatic Installation
+### Automatic Installation
 
 Use the setup script that is inside the setup folder.
 
-#### Manual Installation
+### Manual Installation
 
 1. Clone
 
@@ -51,7 +51,7 @@ If you want remove the prozzie, you can execute:
    docker-compose down
    ```
 
-### Docker Components
+## Docker Components
 
 Currently, the prozzie has multiple services to run:
 
@@ -61,7 +61,7 @@ Currently, the prozzie has multiple services to run:
  - [Wizzie Kafka Connect 0.0.1](https://github.com/wizzie-io/kafka-connect-docker)
  - [Confluent Rest Proxy 3.2.1](https://github.com/wizzie-io/prozzie/tree/master/dockers/confluent-rest-proxy/)
 
-### Supported Protocols
+## Supported Protocols
 
 - [x] Kafka
 - [x] [JSON over HTTP](http://docs.confluent.io/3.0.0/kafka-rest/docs/intro.html#produce-and-consume-json-messages)
@@ -73,8 +73,8 @@ Currently, the prozzie has multiple services to run:
 - [ ] sFlow
 - [ ] SNMP
 
-### Tools
+## Tools
 
  * **prozzie-start**: Start prozzie script. 
  * **prozzie-stop**: Stop prozzie script.
- * **kcli**: CLI to work with Kafka Connec. Usage: `kcli --help`
+ * **kcli**: CLI to work with Kafka Connect. Usage: `kcli --help`
