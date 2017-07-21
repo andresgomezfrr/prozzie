@@ -69,12 +69,21 @@ Currently, the prozzie has multiple services to run:
 - [x] [Binary over HTTP](http://docs.confluent.io/3.0.0/kafka-rest/docs/intro.html#produce-and-consume-binary-messages)
 - [x] [Syslog: UDP, TCP, SSL](https://github.com/jcustenborder/kafka-connect-syslog)
 - [x] [MQTT](https://github.com/evokly/kafka-connect-mqtt)
-- [ ] Netflow
+- [x] [Netflow](https://github.com/wizzie-io/f2k)
 - [ ] sFlow
 - [ ] SNMP
 
-## Tools
+## Netflow
+In order to setup netflow in prozzie, you need to add all netflow probes to
+NETFLOW_PROBES env variable, using the format described in
+[f2k readme](https://github.com/wizzie-io/f2k/blob/master/README.md#sensors-config).
+For example, executing linux setup this way:
 
- * **prozzie-start**: Start prozzie script. 
+```
+NETFLOW_PROBES='{"sensors_networks":{"127.0.0.1":{"observations_id":{"default":{}}}}}' setups/linux_setup.sh
+```
+
+## Tools
+ * **prozzie-start**: Start prozzie script.
  * **prozzie-stop**: Stop prozzie script.
  * **kcli**: CLI to work with Kafka Connect. Usage: `kcli --help`

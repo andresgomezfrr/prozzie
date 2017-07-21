@@ -20,13 +20,13 @@ services:
       KAFKA_ADVERTISED_PORT: 9092
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_BROKER_ID: 0
-      KAFKA_LOG_DIRS: /kafka/kafka-logs 
+      KAFKA_LOG_DIRS: /kafka/kafka-logs
   kafka-rest:
     image: confluentinc/cp-kafka-rest:3.2.1
     restart: always
     depends_on:
       - zookeeper
-      - kafka 
+      - kafka
     ports:
       - 8082:8082
     environment:
@@ -77,3 +77,16 @@ services:
       HTTP_WORKERS: 1
       HTTP_INSECURE: "false"
       KAFKA_TOPICS: "*"
+  f2k:
+    image: gcr.io/wizzie-registry/prozzie-f2k:1.0.2
+    restart: always
+    depends_on:
+      - kafka
+    ports:
+      - "${NETFLOW_COLLECTOR_PORT:-2055}:${NETFLOW_COLLECTOR_PORT:-2055}"
+    environment:
+      F2K_NTHREADS: 3
+      KAFKA_TOPIC: "${NETFLOW_KAFKA_TOPIC:-flow}"
+      COLLECTOR_PORT: "${NETFLOW_COLLECTOR_PORT:-2055}"
+      NETFLOW_PROBES: "${NETFLOW_PROBES:-{\"sensors_networks\":{}}"
+      RDKAFKA_QUEUE_BUFFERING_MAX_MS: 1000
