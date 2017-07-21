@@ -80,7 +80,7 @@ NETFLOW_PROBES env variable, using the format described in
 For example, executing linux setup this way:
 
 ```
-NETFLOW_PROBES='{"sensors_networks":{"127.0.0.1":{"observations_id":{"default":{}}}}}' setups/linux_setup.sh
+NETFLOW_PROBES='{"sensors_networks":{"127.0.0.1":{"observations_id":{"default":{}}}}}' setups/f2k_setup.sh
 ```
 
 ## Tools
