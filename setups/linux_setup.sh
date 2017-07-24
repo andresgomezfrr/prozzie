@@ -3,21 +3,14 @@
 . common.sh
 . /etc/os-release
 
-# Clear screen
-clear
+# [env_variable]="default|prompt"
+declare -A base_envs=(
+  [PREFIX]="${DEFAULT_PREFIX}|Where do you want install prozzie?"
+  [INTERFACE_IP]='|Introduce the IP address'
+  [CLIENT_API_KEY]='|Introduce your client API key'
+  [ZZ_HTTP_ENDPOINT]='|Introduce the data HTTP endpoint URL')
 
-
-# Architecture
-ARCH=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
-
-# List of needed depedencies for prozzie
-NEEDED_DEPENDENCIES="curl jq wget unzip net-tools"
-# List of installed dependencies
-INSTALLED_DEPENDENCIES=""
-# Package manager for install, uninstall and update
-PKG_MANAGER=""
-
-ID=${ID,,}
+declare -rn module_envs=base_envs
 
 # Wizzie Prozzie banner! :D
 function show_banner {
@@ -64,22 +57,43 @@ function update {
 
 }
 
-if [[ $EUID -ne 0 ]]; then
-  log warn "You must be a root user for running this script. Please use sudo\n"
-  exit 1
-fi
+function app_setup () {
+  # Architecture
+  local -r ARCH=$(uname -m | sed 's/x86_//;s/i[3-6]86/32/')
 
-# Show "Wizzie Prozzie" banner
-show_banner
+  # List of needed depedencies for prozzie
+  local -r NEEDED_DEPENDENCIES="curl jq wget unzip net-tools"
+  # List of installed dependencies
+  local INSTALLED_DEPENDENCIES=""
+  # Package manager for install, uninstall and update
+  local PKG_MANAGER=""
 
-# Print user system information
-printf "System information: \n\n"
-printf "  OS: $PRETTY_NAME\n  Architecture: $ARCH\n\n"
+  ID=${ID,,}
 
-# Check architecture
-if [[ $ARCH -eq 64 ]]; then
+  # Clear screen
+  clear
 
-  zz_variable PREFIX "${DEFAULT_PREFIX}" "Where do you want install prozzie? [${PREFIX}] (You can set path to $HOME/.local if you don't have privileges): "
+  if [[ $EUID -ne 0 ]]; then
+    log warn "You must be a root user for running this script. Please use sudo\n"
+    exit 1
+  fi
+
+  # Show "Wizzie Prozzie" banner
+  show_banner
+
+  # Print user system information
+  printf "System information: \n\n"
+  printf "  OS: $PRETTY_NAME\n  Architecture: $ARCH\n\n"
+
+  # Check architecture
+  if [[ $ARCH -ne 64 ]]; then
+    log error "You need 64 bits OS. Your current architecture is: $ARCH"
+  fi
+
+  # Special treatment of PREFIX variable
+
+  zz_variable_ask "/dev/null" base_envs PREFIX
+  unset "base_envs[PREFIX]"
 
   if [[ ! -d "$PREFIX" ]]; then
     log error "The directory [$PREFIX] doesn't exist. Re-run Prozzie installer and enter a valid path.\n"
@@ -316,11 +330,7 @@ if [[ $ARCH -eq 64 ]]; then
     INTERFACE_IP=$(ifconfig ${MAIN_INTERFACE} | grep inet | grep -v inet6 | awk '{printf("%s", $2)}' | sed 's/addr://')
   fi
 
-  zz_variable INTERFACE_IP $INTERFACE_IP '' "Introduce the IP address: "
-  printf "\n\n"
-
-  zz_variable CLIENT_API_KEY   '' "Introduce your client API key: "
-  zz_variable ZZ_HTTP_ENDPOINT '' "Introduce the data HTTP endpoint URL: "
+  zz_variables_ask "$PREFIX/prozzie/.env" base_envs
 
   # Check installed dependencies
   if ! [[ -z "$INSTALLED_DEPENDENCIES" ]]; then
@@ -372,7 +382,9 @@ if [[ $ARCH -eq 64 ]]; then
 
   (cd "$PREFIX/prozzie"; \
   docker-compose up)
+}
 
-else
-  log error "You need 64 bits OS. Your current architecture is: $ARCH"
+# Allow inclusion on other modules with no app_setup call
+if [[ "$1" != "--source" ]]; then
+  app_setup
 fi

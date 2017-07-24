@@ -48,12 +48,15 @@ function zz_variable () {
   fi
 
   if [[ -z "${!1}" ]]; then
-    read -p "$3" $1
+    if [[ ! -z "$2" ]]; then
+      local readonly default=" [$2]"
+    fi
+    read -rp "$3$default:" $1
   fi
 
   if [[ -z "${!1}" ]]; then
     if [[ ! -z "$2" ]]; then
-      read $1 <<< $2
+      read -r $1 <<< "$2"
     else
       log fail "[${!1}][$2] Empty $1 not allowed"
       exit 1
@@ -63,6 +66,52 @@ function zz_variable () {
   if [[ $1 != PREFIX ]]; then
     printf "%s=%s\n" "$1" "${!1}" >> "$env_file"
   fi
+}
+
+# Update zz variables array default values using a docker-compose .env file. If
+# variable it's not contained in $2, copy it to .env file
+# Arguments:
+#  $1 source .env file
+#  $2 destination .env file
+#  $3 Array to update
+function zz_variables_env_update_array {
+  local -n zz_vars_array=$3
+  while IFS='=' read -r var_key var_val || [[ -n "$var_key" ]]; do
+    if [ ${zz_vars_array[$var_key]+_} ]; then
+      # Update zz variable
+      local readonly prompt=$(cut -d '|' -f 2 <<< ${zz_vars_array[$var_key]})
+      zz_vars_array[$var_key]=$(printf "%s|%s" "$var_val" "$prompt")
+    else
+      # Copy to output .env file
+      printf "%s=%s\n" "$var_key" "$var_val" >> "$2"
+    fi
+  done < "$1"
+}
+
+# Ask user for a single ZZ variable
+# Arguments:
+#  $1 env file to save variables
+#  $2 Array with variables
+#  $3 Variable to ask user for
+# Notes:
+#  - If environment variable is defined, user will not be asked for value
+function zz_variable_ask {
+  local var_default
+  local var_prompt
+  local -n var_array=$2
+  IFS='|' read var_default var_prompt <<< "${var_array[$3]}"
+  zz_variable --env-file="$1" "$3" "$var_default" "$var_prompt"
+}
+
+# Ask user for ZZ module variables
+# Arguments:
+#  $1 env file to save variables
+#  $2 Array with variables
+function zz_variables_ask {
+  local -n zz_variables=$2
+  for var_key in "${!zz_variables[@]}"; do
+    zz_variable_ask "$1" $2 "$var_key"
+  done
 }
 
 # Default prefix installation path

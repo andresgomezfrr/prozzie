@@ -25,6 +25,9 @@ Use the setup script that is inside the setup folder.
     * CLIENT_API_KEY
     * ZZ_HTTP_ENDPOINT
 
+    To see a list of all variables, please refer to
+    [Variables table](VARIABLES.md)
+
 4. Execute the prozzie
 
    ```
