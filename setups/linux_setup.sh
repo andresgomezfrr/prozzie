@@ -4,13 +4,11 @@
 . /etc/os-release
 
 # [env_variable]="default|prompt"
-declare -A base_envs=(
+declare -A module_envs=(
   [PREFIX]="${DEFAULT_PREFIX}|Where do you want install prozzie?"
   [INTERFACE_IP]='|Introduce the IP address'
   [CLIENT_API_KEY]='|Introduce your client API key'
   [ZZ_HTTP_ENDPOINT]='|Introduce the data HTTP endpoint URL')
-
-declare -rn module_envs=base_envs
 
 # Wizzie Prozzie banner! :D
 function show_banner {
@@ -91,9 +89,9 @@ function app_setup () {
   fi
 
   # Special treatment of PREFIX variable
-
-  zz_variable_ask "/dev/null" base_envs PREFIX
-  unset "base_envs[PREFIX]"
+  # TODO: When bash >4.3, proper way is [zz_variable_ask "/dev/null" module_envs PREFIX]. Alternative:
+  zz_variable_ask "/dev/null" "$(declare -p module_envs)" PREFIX
+  unset "module_envs[PREFIX]"
 
   if [[ ! -d "$PREFIX" ]]; then
     log error "The directory [$PREFIX] doesn't exist. Re-run Prozzie installer and enter a valid path.\n"
@@ -330,7 +328,8 @@ function app_setup () {
     INTERFACE_IP=$(ifconfig ${MAIN_INTERFACE} | grep inet | grep -v inet6 | awk '{printf("%s", $2)}' | sed 's/addr://')
   fi
 
-  zz_variables_ask "$PREFIX/prozzie/.env" base_envs
+  # TODO: When bash >4.3, proper way is [zz_variables_ask "$PREFIX/prozzie/.env" module_envs]. Alternative:
+  zz_variables_ask "$PREFIX/prozzie/.env" "$(declare -p module_envs)"
 
   # Check installed dependencies
   if ! [[ -z "$INSTALLED_DEPENDENCIES" ]]; then

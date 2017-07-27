@@ -9,11 +9,10 @@ function cleanup {
 }
 
 # [env_variable]="default|prompt"
-declare -A f2k_envs=(
+declare -A module_envs=(
 	[NETFLOW_PROBES]="|JSON object of NF probes (It's recommend to use env var) "
 	[NETFLOW_COLLECTOR_PORT]='2055|In what port do you want to listen for netflow traffic? '
 	[NETFLOW_KAFKA_TOPIC]='flow|Topic to produce netflow traffic? ')
-declare -n module_envs=f2k_envs
 
 function app_setup () {
 	trap cleanup EXIT
@@ -25,10 +24,14 @@ function app_setup () {
 
 	readonly tmp_env=$(mktemp)
 
-	# Check if the user previously provided the variables. In that case, offer user
-	# to mantain previous value.
-	zz_variables_env_update_array "$src_env_file" "$tmp_env" f2k_envs
-	zz_variables_ask "$tmp_env" f2k_envs
+	# Check if the user previously provided the variables. In that case,
+	# offer user to mantain previous value.
+	# TODO all the `$(declare -p module_envs)` are just a hack in order to
+	# support old bash versions (<4.3, Centos 7 case), same with returning
+	# and re-declaring it. With bash `4.3`. Proper way to do is to pass the
+	# array variable, and use `local -n`.
+	eval 'declare -A module_envs='$(zz_variables_env_update_array "$src_env_file" "$tmp_env" "$(declare -p module_envs)")
+	zz_variables_ask "$tmp_env" "$(declare -p module_envs)"
 
 	trap '' EXIT
 	# Hurray! f2k installation end!

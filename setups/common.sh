@@ -75,7 +75,9 @@ function zz_variable () {
 #  $2 destination .env file
 #  $3 Array to update
 function zz_variables_env_update_array {
-  local -n zz_vars_array=$3
+  # TODO: bash >4.3, proper way is [local -n zz_vars_array=$3]. Alternative:
+  eval "declare -A zz_vars_array="${3#*=}
+
   while IFS='=' read -r var_key var_val || [[ -n "$var_key" ]]; do
     if [ ${zz_vars_array[$var_key]+_} ]; then
       # Update zz variable
@@ -86,6 +88,10 @@ function zz_variables_env_update_array {
       printf "%s=%s\n" "$var_key" "$var_val" >> "$2"
     fi
   done < "$1"
+
+  # TODO bash >4.3 hack. We don't need this with bash>4.3
+  local -r ret="$(declare -p zz_vars_array)"
+  printf "%s" "${ret#*=}"
 }
 
 # Ask user for a single ZZ variable
@@ -98,7 +104,9 @@ function zz_variables_env_update_array {
 function zz_variable_ask {
   local var_default
   local var_prompt
-  local -n var_array=$2
+  # TODO: When bash >4.3, proper way is [local -n var_array=$2]. Alternative:
+  eval "declare -A var_array="${2#*=}
+
   IFS='|' read var_default var_prompt <<< "${var_array[$3]}"
   zz_variable --env-file="$1" "$3" "$var_default" "$var_prompt"
 }
@@ -108,9 +116,12 @@ function zz_variable_ask {
 #  $1 env file to save variables
 #  $2 Array with variables
 function zz_variables_ask {
-  local -n zz_variables=$2
+  # TODO: When bash >4.3, proper way is [local -n zz_variables=$2]. Alternative:
+  eval "declare -A zz_variables="${2#*=}
+
   for var_key in "${!zz_variables[@]}"; do
-    zz_variable_ask "$1" $2 "$var_key"
+    # TODO: When bash >4.3, proper way is [zz_variable_ask "$1" $2 "$var_key"]. Alternative:
+    zz_variable_ask "$1" "$(declare -p zz_variables)" "$var_key"
   done
 }
 
