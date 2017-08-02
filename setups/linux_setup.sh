@@ -320,19 +320,21 @@ function app_setup () {
   printf "Done!\n"
   rm -f "$PREFIX/prozzie/.env"
 
-  read -p "Do you want discover the IP address automatically? [Y/n]: " -n 1 -r
-  printf "\n"
+  if [[ -z $INTERFACE_IP ]]; then
+    read -p "Do you want discover the IP address automatically? [Y/n]: " -n 1 -r
+    printf "\n"
 
-  if [[ $REPLY =~ ^[Yy]$ || -z $REPLY ]]; then
-    MAIN_INTERFACE=$(route -n | awk '{printf("%s %s\n", $1, $8)}' | grep 0.0.0.0 | awk '{printf("%s", $2)}')
-    INTERFACE_IP=$(ifconfig ${MAIN_INTERFACE} | grep inet | grep -v inet6 | awk '{printf("%s", $2)}' | sed 's/addr://')
+    if [[ $REPLY =~ ^[Yy]$ || -z $REPLY ]]; then
+      MAIN_INTERFACE=$(route -n | awk '{printf("%s %s\n", $1, $8)}' | grep 0.0.0.0 | awk '{printf("%s", $2)}')
+      INTERFACE_IP=$(ifconfig ${MAIN_INTERFACE} | grep inet | grep -v inet6 | awk '{printf("%s", $2)}' | sed 's/addr://')
+    fi
   fi
 
   # TODO: When bash >4.3, proper way is [zz_variables_ask "$PREFIX/prozzie/.env" module_envs]. Alternative:
   zz_variables_ask "$PREFIX/prozzie/.env" "$(declare -p module_envs)"
 
   # Check installed dependencies
-  if ! [[ -z "$INSTALLED_DEPENDENCIES" ]]; then
+  if ! [[ -z "$INSTALLED_DEPENDENCIES" || "x$REMOVE_DEPS" == "x0" ]]; then
     log info "This script has installed next dependencies: $INSTALLED_DEPENDENCIES\n\n"
 
     read -p  "They are no longer needed. Would you like to uninstall? [y/N]: " -n 1 -r
