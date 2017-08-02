@@ -380,7 +380,7 @@ function app_setup () {
   log info "Starting Prozzie...\n\n"
 
   (cd "$PREFIX/prozzie"; \
-  docker-compose up)
+  docker-compose up -d)
 }
 
 # Allow inclusion on other modules with no app_setup call
