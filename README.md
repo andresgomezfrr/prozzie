@@ -73,7 +73,7 @@ Currently, the prozzie has multiple services to run:
 - [x] [Syslog: UDP, TCP, SSL](https://github.com/jcustenborder/kafka-connect-syslog)
 - [x] [MQTT](https://github.com/evokly/kafka-connect-mqtt)
 - [x] [Netflow](https://github.com/wizzie-io/f2k)
-- [ ] sFlow
+- [x] sFlow (via [pmacct](http://www.pmacct.net/))
 - [ ] SNMP
 
 ## Netflow
@@ -85,6 +85,14 @@ For example, executing linux setup this way:
 ```
 NETFLOW_PROBES='{"sensors_networks":{"127.0.0.1":{"observations_id":{"default":{}}}}}' setups/f2k_setup.sh
 ```
+
+To configure netflow probe, please use (f2k_setup.sh)[setups/f2k_setup.sh] over
+a valid prozzie installation.
+
+## sflow
+Sflow support is provided via [pmacct](http://www.pmacct.net/)
+[sflow](http://www.sflow.org/) sfacctd accounting daemon. You can configure it
+in prozzie using (sfacctd_setup.sh)[setups/sfacctd_setup.sh].
 
 ## Tools
  * **prozzie-start**: Start prozzie script.

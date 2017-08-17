@@ -7,6 +7,8 @@ readonly yellow="\e[1;33m"
 readonly white="\e[1;37m"
 readonly normal="\e[m"
 
+readonly DEFAULT_PREFIX="/usr/local"
+
 # log function
 function log {
   case $1 in
@@ -125,5 +127,35 @@ function zz_variables_ask {
   done
 }
 
-# Default prefix installation path
-readonly DEFAULT_PREFIX="/usr/local"
+# Clean up temp file. Internal function for app_setup
+function app_cleanup {
+  echo
+  log warn "No changes made to $src_env_file"
+  rm -rf "$tmp_env"
+}
+
+# Set up appliction in prozzie
+# Needs a declared "module_envs" global array: ([global_var]="default|description")
+function app_setup () {
+  trap app_cleanup EXIT
+
+  src_env_file="$DEFAULT_PREFIX/prozzie/.env"
+  while [[ ! -f "$src_env_file" ]]; do
+    read -p ".env file not found in \"$src_env_file\". Please provide .env path: " src_env_file
+  done
+
+  readonly tmp_env=$(mktemp)
+
+  # Check if the user previously provided the variables. In that case,
+  # offer user to mantain previous value.
+  # TODO all the `$(declare -p module_envs)` are just a hack in order to
+  # support old bash versions (<4.3, Centos 7 case), same with returning
+  # and re-declaring it. With bash `4.3`. Proper way to do is to pass the
+  # array variable, and use `local -n`.
+  eval 'declare -A module_envs='$(zz_variables_env_update_array "$src_env_file" "$tmp_env" "$(declare -p module_envs)")
+  zz_variables_ask "$tmp_env" "$(declare -p module_envs)"
+
+  trap '' EXIT
+  # Hurray! f2k installation end!
+  cp "$tmp_env" "$src_env_file"
+}
