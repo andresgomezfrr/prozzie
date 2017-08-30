@@ -9,7 +9,7 @@ declare -r sfacctd_aggregate='cos, etype, src_mac, dst_mac, vlan, src_host, \
 	export_proto_version, timestamp_arrival'
 
 declare -A module_envs=(
-	[SFLOW_KAFKA_TOPIC]="flow|Topic to produce netflow traffic"
+	[SFLOW_KAFKA_TOPIC]="sflow|Topic to produce sflow traffic"
 	[SFLOW_COLLECTOR_PORT]="6343|In what port do you want to listen for sflow traffic"
 	[SFLOW_RENORMALIZE]="true|Normalize sflow based on sampling"
 	[SFLOW_AGGREGATE]="$sfacctd_aggregate|sfacctd aggregation fields")
