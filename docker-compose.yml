@@ -83,7 +83,7 @@ services:
     depends_on:
       - kafka
     ports:
-      - "${NETFLOW_COLLECTOR_PORT:-2055}:${NETFLOW_COLLECTOR_PORT:-2055}"
+      - "${NETFLOW_COLLECTOR_PORT:-2055}:${NETFLOW_COLLECTOR_PORT:-2055}/udp"
     environment:
       F2K_NTHREADS: 3
       KAFKA_TOPIC: "${NETFLOW_KAFKA_TOPIC:-flow}"
@@ -96,7 +96,7 @@ services:
     depends_on:
       - kafka
     ports:
-      - "${SFLOW_COLLECTOR_PORT:-6343}:${SFLOW_COLLECTOR_PORT:-6343}"
+      - "${SFLOW_COLLECTOR_PORT:-6343}:${SFLOW_COLLECTOR_PORT:-6343}/udp"
     environment:
       KAFKA_BROKERS: "kafka"
       KAFKA_TOPIC: "${SFLOW_KAFKA_TOPIC:-flow}"
