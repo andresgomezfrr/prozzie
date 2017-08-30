@@ -88,7 +88,7 @@ services:
       F2K_NTHREADS: 3
       KAFKA_TOPIC: "${NETFLOW_KAFKA_TOPIC:-flow}"
       COLLECTOR_PORT: "${NETFLOW_COLLECTOR_PORT:-2055}"
-      NETFLOW_PROBES: "${NETFLOW_PROBES:-{\"sensors_networks\":{}}"
+      NETFLOW_PROBES: "${NETFLOW_PROBES}"
       RDKAFKA_QUEUE_BUFFERING_MAX_MS: 1000
   sfacctd:
     image: gcr.io/wizzie-registry/prozzie-sfacctd:1.6.2
