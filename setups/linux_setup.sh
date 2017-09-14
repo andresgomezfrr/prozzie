@@ -326,7 +326,7 @@ function app_setup () {
 
     if [[ $REPLY =~ ^[Yy]$ || -z $REPLY ]]; then
       MAIN_INTERFACE=$(route -n | awk '{printf("%s %s\n", $1, $8)}' | grep 0.0.0.0 | awk '{printf("%s", $2)}')
-      INTERFACE_IP=$(ifconfig ${MAIN_INTERFACE} | grep inet | grep -v inet6 | awk '{printf("%s", $2)}' | sed 's/addr://')
+      INTERFACE_IP=$(ifconfig ${MAIN_INTERFACE} | grep inet | grep -v inet6 | awk '{printf("%s", $2)}' | sed -E -e 's/(inet|addr)://')
     fi
   fi
 
