@@ -71,7 +71,7 @@ Currently, the prozzie has multiple services to run:
 - [x] [Avro over HTTP](http://docs.confluent.io/3.0.0/kafka-rest/docs/intro.html#produce-and-consume-avro-messages)
 - [x] [Binary over HTTP](http://docs.confluent.io/3.0.0/kafka-rest/docs/intro.html#produce-and-consume-binary-messages)
 - [x] [Syslog: UDP, TCP, SSL](https://github.com/jcustenborder/kafka-connect-syslog)
-- [x] [MQTT](https://github.com/evokly/kafka-connect-mqtt)
+- [x] [MQTT](https://github.com/wizzie-io/kafka-connect-mqtt.git) - [MQTT Setup](https://github.com/wizzie-io/prozzie/docs/MQTT.md)
 - [x] [Netflow](https://github.com/wizzie-io/f2k)
 - [x] sFlow (via [pmacct](http://www.pmacct.net/))
 - [ ] SNMP
