@@ -103,7 +103,7 @@ services:
       - "${SFLOW_COLLECTOR_PORT:-6343}:${SFLOW_COLLECTOR_PORT:-6343}/udp"
     environment:
       KAFKA_BROKERS: "kafka"
-      KAFKA_TOPIC: "${SFLOW_KAFKA_TOPIC:-sflow}"
+      KAFKA_TOPIC: "${SFLOW_KAFKA_TOPIC:-pmacct}"
       COLLECTOR_PORT: "${SFLOW_COLLECTOR_PORT:-6343}"
       SFACCTD_RENORMALIZE: "${SFLOW_RENORMALIZE:-true}"
       AGGREGATE: "${SFLOW_AGGREGATE:-src_host}"
