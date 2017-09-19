@@ -22,17 +22,16 @@ services:
       KAFKA_BROKER_ID: 0
       KAFKA_LOG_DIRS: /kafka/kafka-logs
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-  kafka-rest:
-    image: confluentinc/cp-kafka-rest:3.2.1
+  http2k:
+    image: gcr.io/wizzie-registry/n2kafka:1.99-2
     restart: always
     depends_on:
-      - zookeeper
       - kafka
     ports:
-      - 8082:8082
+      - 7980:7980
     environment:
-       KAFKA_REST_ZOOKEEPER_CONNECT: zookeeper:2181
-       KAFKA_REST_HOST_NAME: kafka-rest
+      KAFKA_BROKERS: kafka
+
   kafka-connect:
     image: gcr.io/wizzie-registry/wizzie-kc:0.1.0
     restart: always

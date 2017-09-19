@@ -67,9 +67,7 @@ Currently, the prozzie has multiple services to run:
 ## Supported Protocols
 
 - [x] Kafka
-- [x] [JSON over HTTP](http://docs.confluent.io/3.0.0/kafka-rest/docs/intro.html#produce-and-consume-json-messages)
-- [x] [Avro over HTTP](http://docs.confluent.io/3.0.0/kafka-rest/docs/intro.html#produce-and-consume-avro-messages)
-- [x] [Binary over HTTP](http://docs.confluent.io/3.0.0/kafka-rest/docs/intro.html#produce-and-consume-binary-messages)
+- [x] [JSON over HTTP](https://github.com/wizzie-io/n2kafka/blob/master/src/decoder/zz_http2k/README.md)
 - [x] [Syslog: UDP, TCP, SSL](https://github.com/jcustenborder/kafka-connect-syslog)
 - [x] [MQTT](https://github.com/wizzie-io/kafka-connect-mqtt.git) - [MQTT Setup](https://github.com/wizzie-io/prozzie/docs/MQTT.md)
 - [x] [Flow](docs/flow.md) protocols,
