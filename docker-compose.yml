@@ -23,7 +23,7 @@ services:
       KAFKA_LOG_DIRS: /kafka/kafka-logs
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
   http2k:
-    image: gcr.io/wizzie-registry/n2kafka:1.99-2
+    image: gcr.io/wizzie-registry/n2kafka:1.99-10
     restart: always
     depends_on:
       - kafka
@@ -31,6 +31,18 @@ services:
       - 7980:7980
     environment:
       KAFKA_BROKERS: kafka
+  meraki:
+    image: gcr.io/wizzie-registry/n2kafka:1.99-10
+    restart: always
+    depends_on:
+      - kafka
+    ports:
+      - 2057:2057
+    environment:
+      KAFKA_BROKERS: kafka
+      DECODER: meraki
+      LISTENER_PORT: 2057
+      DEFAULT_TOPIC: meraki
 
   kafka-connect:
     image: gcr.io/wizzie-registry/wizzie-kc:0.1.0
