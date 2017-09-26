@@ -10,6 +10,8 @@ connector.class=com.github.jcustenborder.kafka.connect.syslog.UDPSyslogSourceCon
 tasks.max=1
 key.converter=org.apache.kafka.connect.json.JsonConverter
 value.converter=org.apache.kafka.connect.json.JsonConverter
+key.converter.schemas.enable=false
+value.converter.schemas.enable=false
 
 #Settings
 kafka.topic=syslog
