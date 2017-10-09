@@ -8,7 +8,17 @@ declare -A module_envs=(
   [PREFIX]="${DEFAULT_PREFIX}|Where do you want install prozzie?"
   [INTERFACE_IP]='|Introduce the IP address'
   [CLIENT_API_KEY]='|Introduce your client API key'
-  [ZZ_HTTP_ENDPOINT]='|Introduce the data HTTP endpoint URL')
+  [ZZ_HTTP_ENDPOINT]='|Introduce the data HTTPS endpoint URL (use http://.. for plain HTTP)')
+
+function ZZ_HTTP_ENDPOINT_sanitize() {
+  if [[ ! "$1" =~ http[s]?://* ]]; then
+    declare $1="https://${!1}"
+  fi
+  if [[ ! "$1" =~ */v1/data/ ]]; then
+    declare $1="${!1}/v1/data"
+  fi
+  printf "%s" "${!1}"
+}
 
 # Wizzie Prozzie banner! :D
 function show_banner {

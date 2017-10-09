@@ -33,6 +33,12 @@ function log {
   esac
 }
 
+# Check function $1 existence
+function func_exists {
+    declare -f "$1" > /dev/null
+    return $?
+}
+
 # ZZ variables treatment. Checks if an environment variable is defined, and ask
 # user for value if not.
 # After that, save it in docker-compose .env file
@@ -63,6 +69,10 @@ function zz_variable () {
       log fail "[${!1}][$2] Empty $1 not allowed"
       exit 1
     fi
+  fi
+
+  if func_exists "$1_sanitize"; then
+    read -r $1 <<< "$($1_sanitize $1)"
   fi
 
   if [[ $1 != PREFIX ]]; then
