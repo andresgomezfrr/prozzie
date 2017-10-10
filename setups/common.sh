@@ -168,4 +168,7 @@ function app_setup () {
   trap '' EXIT
   # Hurray! f2k installation end!
   cp "$tmp_env" "$src_env_file"
+
+  # Reload prozzie
+  (cd $(dirname "$src_env_file"); docker-compose up -d)
 }
