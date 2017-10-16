@@ -72,7 +72,7 @@ function zz_variable () {
   fi
 
   if func_exists "$1_sanitize"; then
-    read -r $1 <<< "$($1_sanitize $1)"
+    read -r $1 <<< "$($1_sanitize "${!1}")"
   fi
 
   if [[ $1 != PREFIX ]]; then

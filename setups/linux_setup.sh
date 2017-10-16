@@ -11,13 +11,14 @@ declare -A module_envs=(
   [ZZ_HTTP_ENDPOINT]='|Introduce the data HTTPS endpoint URL (use http://.. for plain HTTP)')
 
 function ZZ_HTTP_ENDPOINT_sanitize() {
-  if [[ ! "$1" =~ http[s]?://* ]]; then
-    declare $1="https://${!1}"
+  declare out="$1"
+  if [[ ! "$out" =~ ^http[s]?://* ]]; then
+    declare out="https://${out}"
   fi
-  if [[ ! "$1" =~ */v1/data/ ]]; then
-    declare $1="${!1}/v1/data"
+  if [[ ! "$out" =~ /v1/data[/]?$ ]]; then
+    declare out="${out}/v1/data"
   fi
-  printf "%s" "${!1}"
+  printf "%s" "$out"
 }
 
 # Wizzie Prozzie banner! :D
