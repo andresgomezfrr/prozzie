@@ -109,6 +109,8 @@ function app_setup () {
     exit 1
   fi
 
+  local -r src_env_file="$PREFIX/prozzie/.env"
+
   log info "Prozzie will be installed in: [$PREFIX]\n"
 
   # Set PKG_MANAGER first time
@@ -321,6 +323,13 @@ function app_setup () {
   DOCKER_COMPOSE_VERSION=$(docker-compose --version) 2> /dev/null
   log ok "Installed: $DOCKER_COMPOSE_VERSION\n\n"
 
+  if [[ -f "$src_env_file" ]]; then
+    # Save current env file for future references
+    local -r tmp_env="$(mktemp)"
+    cp "$src_env_file" "$tmp_env"
+    trap app_cleanup EXIT
+  fi
+
   # Download of prozzie and installation
   log info "Downloading latest release of Prozzie..."
   wget $(curl -sL http://api.github.com/repos/wizzie-io/prozzie/releases/latest?access_token=4ea54f05cd7111c2e886f2c26f59b99109245053 | jq '(.zipball_url + "?access_token=4ea54f05cd7111c2e886f2c26f59b99109245053")'| sed 's|[",]||g') -O prozzie.zip &> /dev/null
@@ -329,7 +338,9 @@ function app_setup () {
   log info "Decompressing..."
   unzip -qj -o prozzie.zip -d "$PREFIX/prozzie" &> /dev/null ; rm -rf prozzie.zip
   printf "Done!\n"
-  rm -f "$PREFIX/prozzie/.env"
+  cp "$tmp_env" "$src_env_file"
+  > "$tmp_env"
+  eval 'declare -A module_envs='$(zz_variables_env_update_array "$src_env_file" "$tmp_env" "$(declare -p module_envs)")
 
   if [[ -z $INTERFACE_IP ]]; then
     read -p "Do you want discover the IP address automatically? [Y/n]: " -n 1 -r
@@ -342,7 +353,10 @@ function app_setup () {
   fi
 
   # TODO: When bash >4.3, proper way is [zz_variables_ask "$PREFIX/prozzie/.env" module_envs]. Alternative:
-  zz_variables_ask "$PREFIX/prozzie/.env" "$(declare -p module_envs)"
+  zz_variables_ask "$tmp_env" "$(declare -p module_envs)"
+  mv "$tmp_env" "$src_env_file"
+
+  trap '' EXIT # No need for file cleanup anymore
 
   # Check installed dependencies
   if ! [[ -z "$INSTALLED_DEPENDENCIES" || "x$REMOVE_DEPS" == "x0" ]]; then
