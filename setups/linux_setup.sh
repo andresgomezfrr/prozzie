@@ -338,9 +338,15 @@ function app_setup () {
   log info "Decompressing..."
   unzip -qj -o prozzie.zip -d "$PREFIX/prozzie" &> /dev/null ; rm -rf prozzie.zip
   printf "Done!\n"
-  cp "$tmp_env" "$src_env_file"
-  > "$tmp_env"
-  eval 'declare -A module_envs='$(zz_variables_env_update_array "$src_env_file" "$tmp_env" "$(declare -p module_envs)")
+  if [[ ! -z "$tmp_env" ]]; then
+    # Restore & read old env before installation
+    cp "$tmp_env" "$src_env_file"
+    > "$tmp_env"
+    eval 'declare -A module_envs='$(zz_variables_env_update_array "$src_env_file" "$tmp_env" "$(declare -p module_envs)")
+  else
+    # Simulate empty temp file
+    local -r tmp_env=$(mktemp)
+  fi
 
   if [[ -z $INTERFACE_IP ]]; then
     read -p "Do you want discover the IP address automatically? [Y/n]: " -n 1 -r
