@@ -1,4 +1,8 @@
 version: '3'
+volumes:
+  # Empty volume as placeholder in case that no custom mibs specified
+  "monitor_custom_mibs":
+
 services:
   zookeeper:
     image: zookeeper:3.4.10
@@ -119,3 +123,15 @@ services:
       COLLECTOR_PORT: "${SFLOW_COLLECTOR_PORT:-6343}"
       SFACCTD_RENORMALIZE: "${SFLOW_RENORMALIZE:-true}"
       AGGREGATE: "${SFLOW_AGGREGATE:-src_host}"
+  monitor:
+    image: gcr.io/wizzie-registry/prozzie-monitor:1.1.0
+    restart: always
+    depends_on:
+      - kafka
+    environment:
+      REQUESTS_TIMEOUT: ${MONITOR_REQUEST_TIMEOUT:-25}
+      KAFKA_BROKERS: 'kafka'
+      KAFKA_TOPIC: "${MONITOR_KAFKA_TOPIC:-monitor}"
+      SENSORS_ARRAY: "${MONITOR_SENSORS_ARRAY:-''}"
+    volumes:
+      - "${MONITOR_CUSTOM_MIB_PATH:-monitor_custom_mibs}:/root/.snmp/mibs:ro"

@@ -74,7 +74,7 @@ Currently, the prozzie has multiple services to run:
       [Netflow](https://github.com/wizzie-io/f2k), sFlow (integrated via
       [pmacct](http://www.pmacct.net/)) and pmacct family.
 - [x] [Meraki](docs/meraki.md)
-- [ ] SNMP
+- [x] [SNMP](docs/snmp.md)
 
 ## Tools
  * **prozzie-start**: Start prozzie script.
