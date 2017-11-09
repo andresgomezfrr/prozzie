@@ -55,7 +55,7 @@ services:
       - kafka
     ports:
       - 8083:8083
-      - 5577:514/udp
+      - 5577:1514/udp
       - 5576:601
     environment:
        CONNECT_BOOTSTRAP_SERVERS: kafka:9092
