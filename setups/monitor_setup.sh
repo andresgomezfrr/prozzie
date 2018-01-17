@@ -9,7 +9,8 @@ declare -A module_envs=(
 	[MONITOR_REQUEST_TIMEOUT]='25|Seconds between monitor polling'
 	[MONITOR_KAFKA_TOPIC]='monitor|Topic to produce monitor metrics'
 	[MONITOR_CUSTOM_MIB_PATH]="monitor_custom_mibs|$monitor_custom_mib_prompt"
-	[MONITOR_SENSORS_ARRAY]="''|Monitor agents array")
+	[MONITOR_SENSORS_ARRAY]="''|Monitor agents array"
+	[MONITOR_TRAPS_PORT]="162|Port to listen for SNMP traps")
 
 if [[ "$1" != '--source' ]]; then
 	app_setup
