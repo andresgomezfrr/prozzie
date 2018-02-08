@@ -92,7 +92,7 @@ services:
       BATCH_WORKERS: 1
       BATCH_SIZE: 1000
       BATCH_TIMEOUT_MS: 100
-      BATCH_DEFLASE: "false"
+      BATCH_DEFLATE: "false"
       HTTP_WORKERS: 1
       HTTP_INSECURE: "false"
       KAFKA_TOPICS: "*"
