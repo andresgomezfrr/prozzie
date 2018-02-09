@@ -1,68 +1,83 @@
-# prozzie
+# Prozzie
 
-The prozzie works using docker-compose. The prozzie allows us to send data to Wizzie Cloud. It does the authentication, back-pressure, data encryption and data persistence.
+> Main entry point for the data plane of [Wizzie Data Platform](http://wizzie.io/).
 
-## Installation
+Under the hoods, prozzie is just a docker-compose file that provides you the
+basics for sending the data events to WDP: authentication, encryption,
+homogenization and a flexible kafka buffer for back-pressure and local data
+persistence.
 
-### Automatic Installation
+It provides out-of-the-box support for **json** over kafka, http POSTs, and
+mqtt, and it supports others such netflow, snmp and json over mqtt with a small
+configuration. Please see [Supported Protocols](#Supported-Protocols) for a more
+exhaustive list.
 
-Use the setup script that is inside the setup folder.
+## Basic usage
+### Sending data
 
-### Manual Installation
+You can send raw data using curl or kafka protocol, and prozzie will manage to
+send the data to WDP. After that, you will be able to see it in the analytic
+platform.
 
-1. Clone
+Here you can send data using curl:
 
-  ```
-  git clone https://github.com/wizzie-io/prozzie.git
-  ```
+```bash
+$ curl -d '{"test":1,"timestamp":1518086046}' \
+localhost:7980/v1/data/testtopic
+```
 
-2. Install docker-compose
+You can batch JSONs and prozzie will split:
 
-  * https://docs.docker.com/compose/install/
+```bash
+$ curl -d \
+'{"test":1,"timestamp":1518086046}{"test":1,"timestamp":1518086047}' \
+localhost:7980/v1/data/testtopic
+```
 
-3. You can configure the parameters into `.env` file:
-    * INTERFACE_IP
-    * CLIENT_API_KEY
-    * ZZ_HTTP_ENDPOINT
+And using a kafka producer (for example, prozzie built in one):
 
-    To see a list of all variables, please refer to
-    [Variables table](VARIABLES.md)
+```bash
+$ docker-compose exec kafka /opt/kafka/bin/kafka-console-producer.sh \
+--broker-list 192.168.1.203:9092 --topic testtopic
+```
 
-4. Execute the prozzie
+You can check that prozzie kafka receives message:
 
-   ```
-   docker-compose up
-   ```
+```bash
+$ docker-compose exec kafka /opt/kafka/bin/kafka-console-consumer.sh \
+--bootstrap-server 192.168.1.203:9092 --topic testtopic
+```
 
-To start and stop the prozzie, you can use:
+And check the result on WDP. (Note: as a simpler alternative to WDP, we use an
+example echo server that will receive JSON messages in the demo).
 
-  * start
+[![asciicast](https://asciinema.org/a/ofgYDhbA5BG29FQRxFYAuDVYy.png)](https://asciinema.org/a/ofgYDhbA5BG29FQRxFYAuDVYy)
 
-  ```
-  docker-compose start
-  ```
+### Installation
 
-  * stop
+Clone the repo and execute the `setups/linux_setup.sh` script that will guide
+you through the entire installation. After that, if you want to support another
+protocol that needs configuration, you have to execute the proper `setup` script
+under `setups/`.
 
-  ```
-  docker-compose stop
-  ```
+You will be asked for a prozzie installation path. After installation, you can
+start and stop the prozzie using `bin/start-prozzie.sh` and
+`bin/stop-prozzie.sh` under that installation path.
 
-If you want remove the prozzie, you can execute:
+Since all prozzie is contained in a docker compose, you can use
+`docker-compose start` and `docker-compose stop` in the prozzie folder to start
+and stop the prozzie, and `docker-compose down` for delete all created
+containers.
 
-   ```
-   docker-compose down
-   ```
+### Operation
+After installation, you can re-run `linux_setup.sh` or the others `*_setup.sh`
+tools to reconfigure different prozzie components.
 
-## Docker Components
+Syslog and mqtt protocols are handled via kafka connect, so you need to use the
+installed `kcli` component to handle them.
 
-Currently, the prozzie has multiple services to run:
-
- - [Zookeeper 3.4.10](https://hub.docker.com/_/zookeeper/)
- - [Kafka 0.10.2.0](https://hub.docker.com/r/wurstmeister/kafka/)
- - [K2http 1.3.0](https://github.com/wizzie-io/k2http)
- - [Wizzie Kafka Connect 0.0.1](https://github.com/wizzie-io/kafka-connect-docker)
- - [Confluent Rest Proxy 3.2.1](https://github.com/wizzie-io/prozzie/tree/master/dockers/confluent-rest-proxy/)
+Lastly, you will have the tools `prozzie-start` and `prozzie-stop` to start and
+stop the prozzie easily.
 
 ## Supported Protocols
 
@@ -75,8 +90,3 @@ Currently, the prozzie has multiple services to run:
       [pmacct](http://www.pmacct.net/)) and pmacct family.
 - [x] [Meraki](docs/meraki.md)
 - [x] [SNMP](docs/snmp.md)
-
-## Tools
- * **prozzie-start**: Start prozzie script.
- * **prozzie-stop**: Stop prozzie script.
- * **kcli**: CLI to work with Kafka Connect. Usage: `kcli --help`
