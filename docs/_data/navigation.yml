@@ -1,0 +1,20 @@
+- title: Index
+  url: /
+- title: Installation
+  url: /installation/Installation
+- title: Protocols
+  children:
+    - title: http
+      url: /protocols/http
+    - title: kafka
+      url: /protocols/kafka
+    - title: mqtt
+      url: /protocols/mqtt
+    - title: syslog
+      url: /protocols/syslog
+    - title: flow
+      url: /protocols/flow
+    - title: meraki
+      url: /protocols/meraki
+    - title: snmp
+      url: /protocols/snmp

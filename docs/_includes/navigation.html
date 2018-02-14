@@ -1,0 +1,22 @@
+<nav class=navigation>
+    <ul>
+        {% for link in site.data.navigation %}
+        <li>
+            {% if link.url %}
+            <a href="{{ site.baseurl }}{{ link.url }}">{{ link.title }}</a>
+            {% else %}
+            <p class=thick>{{ link.title }}</p>
+            {% endif %}
+            {% if link.children %}
+            <ul class=sub-navigation>
+                {% for sublink in link.children %}
+                    <li>
+                        <a href="{{ site.baseurl }}{{ sublink.url }}">{{ sublink.title }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</nav>

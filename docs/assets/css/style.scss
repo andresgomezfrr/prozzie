@@ -1,0 +1,41 @@
+---
+---
+
+@import "{{ site.theme }}";
+
+header {
+	position: relative;
+}
+
+header .repo-info {
+	position: relative;
+}
+
+header nav.navigation ul {
+	background-color: inherit;
+	border: none;
+	height: auto;
+}
+
+header nav.navigation ul li {
+	width: 100%;
+	border-right: none;
+	float: none;
+	height: auto;
+}
+
+header nav.navigation ul li a {
+	text-align: left;
+}
+
+header nav.navigation ul.sub-navigation {
+	padding-left: 20px;
+}
+
+header nav p.thick {
+	font-weight: bold;
+}
+
+#improve-link {
+	float: right;
+}

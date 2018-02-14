@@ -1,3 +1,6 @@
+---
+---
+
 # MQTT
 
 To configure MQTT you can use `kcli` tool.
@@ -25,9 +28,14 @@ message_processor_class=com.evokly.kafka.connect.mqtt.sample.StringProcessor
 
 You need to configure the mqtt.properties file with your properties:
 
-* mqtt.server_uris: The MQTT brokers.
-* mqtt.topic: The MQTT topics to subcribe.
-* kafka.topic: The Kafka topic to send the messages.
+mqtt.server_uris
+: The MQTT brokers.
+
+mqtt.topic
+: The MQTT topics to subcribe.
+
+kafka.topic
+: The Kafka topic to send the messages.
 
 When you configure the `mqtt.properties` you need to create the connector:
 

@@ -1,3 +1,6 @@
+---
+---
+
 # Syslog
 
 To configure Syslog you can use `kcli` tool.
@@ -22,8 +25,11 @@ syslog.structured.data=true
 
 You need to configure the syslog.properties file with your properties:
 
-* connector.class: You can configure the connector class to use UDP, TCP or SSL
-* kafka.topic: The Kafka topic to send the messages.
+connector.class
+: You can configure the connector class to use UDP, TCP or SSL
+
+kafka.topic
+: The Kafka topic to send the messages.
 
 When you configure the `syslog.properties` you need to create the connector:
 

@@ -1,0 +1,17 @@
+# Site theme
+theme: jekyll-theme-minimal
+
+# Site title and subtitle. This is used in _includes/header.html
+title: 'Prozzie'
+subtitle: 'Entrypoint for WDP'
+
+# URL to source code, used in _includes/footer.html
+repository: 'wizzie-io/prozzie'
+
+# Default to all pages
+defaults:
+ -
+   scope:
+     path: "" # an empty string here means all files in the project
+   values:
+     layout: "default"
