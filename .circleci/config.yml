@@ -51,6 +51,14 @@ P_tests: &P_tests
           - prozzie
 
 jobs:
+  shellcheck:
+    docker:
+      - image: koalaman/shellcheck-alpine
+    steps:
+      - checkout
+      - run:
+          command: find . \( -name '*.bash' -o -name '*.sh' \) -a -exec shellcheck -x {} \+
+
   ubuntu16.04:
     <<: *P_tests
     docker:
