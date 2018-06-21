@@ -26,73 +26,6 @@ testDescribeAll() {
 }
 
 #--------------------------------------------------------
-# TEST MODULES VARIABLES AND DESCRIPTIONS
-#--------------------------------------------------------
-
-testBaseModule() {
-    genericTestModule 3 base ZZ_HTTP_ENDPOINT INTERFACE_IP CLIENT_API_KEY
-}
-
-testF2kModule() {
-    genericTestModule 2 f2k NETFLOW_PROBES NETFLOW_KAFKA_TOPIC
-}
-
-testMonitorModule() {
-    genericTestModule 4 monitor MONITOR_CUSTOM_MIB_PATH MONITOR_KAFKA_TOPIC \
-        MONITOR_REQUEST_TIMEOUT MONITOR_SENSORS_ARRAY
-}
-
-testMqttModule() {
-    genericTestModule 14 mqtt mqtt.server_uris kafka.topic mqtt.topic name \
-        connector.class tasks.max key.converter value.converter mqtt.client_id \
-        mqtt.clean_session mqtt.connection_timeout mqtt.keep_alive_interval \
-        mqtt.qosl message_processor_class
-}
-
-testSyslogModule() {
-    genericTestModule 11 syslog name connector.class tasks.max key.converter \
-        value.converter key.converter.schemas.enable \
-        value.converter.schemas.enable kafka.topic syslog.host syslog.port \
-        syslog.structured.data
-}
-
-testSfacctdModule() {
-    genericTestModule 3 sfacctd SFLOW_KAFKA_TOPIC SFLOW_RENORMALIZE \
-        SFLOW_AGGREGATE
-}
-
-#--------------------------------------------------------
-# TEST BASE MODULE
-#--------------------------------------------------------
-
-testSetupBaseModuleVariables() {
-    # Try to change via setup
-    genericSetupQuestionAnswer base \
-        'Data HTTPS endpoint URL (use http://.. for plain HTTP)' \
-            'my.test.endpoint' \
-        "Interface IP address" \
-            "${INTERFACE_IP}" \
-        'Client API key' \
-            'myApiKey'
-
-    ${_ASSERT_TRUE_} '"prozzie config -s base must done with no failure"' $?
-
-    genericTestModule 3 base 'ZZ_HTTP_ENDPOINT=https://my.test.endpoint/v1/data' \
-                             "INTERFACE_IP=${INTERFACE_IP}" \
-                             'CLIENT_API_KEY=myApiKey'
-}
-
-testSetBaseModuleVariables() {
-    "${PROZZIE_PREFIX}"/bin/prozzie config base ZZ_HTTP_ENDPOINT my.super.test.endpoint
-    "${PROZZIE_PREFIX}"/bin/prozzie config base INTERFACE_IP ${INTERFACE_IP}
-    "${PROZZIE_PREFIX}"/bin/prozzie config base CLIENT_API_KEY mySuperApiKey
-
-    genericTestModule 3 base 'ZZ_HTTP_ENDPOINT=https://my.super.test.endpoint/v1/data' \
-                             "INTERFACE_IP=${INTERFACE_IP}" \
-                             'CLIENT_API_KEY=mySuperApiKey'
-}
-
-#--------------------------------------------------------
 # TEST F2K MODULE
 #--------------------------------------------------------
 
@@ -225,6 +158,74 @@ testGetSyslogModuleVariables() {
                                 'value.converter.schemas.enable=false'
 }
 
+
+#--------------------------------------------------------
+# TEST BASE MODULE
+#--------------------------------------------------------
+
+testSetupBaseModuleVariables() {
+    # Try to change via setup
+    genericSetupQuestionAnswer base \
+        'Data HTTPS endpoint URL (use http://.. for plain HTTP)' \
+            'my.test.endpoint' \
+        "Interface IP address" \
+            "${INTERFACE_IP}" \
+        'Client API key' \
+            'myApiKey'
+
+    ${_ASSERT_TRUE_} '"prozzie config -s base must done with no failure"' $?
+
+    genericTestModule 3 base 'ZZ_HTTP_ENDPOINT=https://my.test.endpoint/v1/data' \
+                             "INTERFACE_IP=${INTERFACE_IP}" \
+                             'CLIENT_API_KEY=myApiKey'
+}
+
+testSetBaseModuleVariables() {
+    "${PROZZIE_PREFIX}"/bin/prozzie config base ZZ_HTTP_ENDPOINT my.super.test.endpoint
+    "${PROZZIE_PREFIX}"/bin/prozzie config base INTERFACE_IP ${INTERFACE_IP}
+    "${PROZZIE_PREFIX}"/bin/prozzie config base CLIENT_API_KEY mySuperApiKey
+
+    genericTestModule 3 base 'ZZ_HTTP_ENDPOINT=https://my.super.test.endpoint/v1/data' \
+                             "INTERFACE_IP=${INTERFACE_IP}" \
+                             'CLIENT_API_KEY=mySuperApiKey'
+}
+
+#--------------------------------------------------------
+# TEST MODULES VARIABLES AND DESCRIPTIONS
+#--------------------------------------------------------
+
+testBaseModule() {
+    genericTestModule 3 base ZZ_HTTP_ENDPOINT INTERFACE_IP CLIENT_API_KEY
+}
+
+testF2kModule() {
+    genericTestModule 2 f2k NETFLOW_PROBES NETFLOW_KAFKA_TOPIC
+}
+
+testMonitorModule() {
+    genericTestModule 4 monitor MONITOR_CUSTOM_MIB_PATH MONITOR_KAFKA_TOPIC \
+        MONITOR_REQUEST_TIMEOUT MONITOR_SENSORS_ARRAY
+}
+
+testMqttModule() {
+    genericTestModule 14 mqtt mqtt.server_uris kafka.topic mqtt.topic name \
+        connector.class tasks.max key.converter value.converter mqtt.client_id \
+        mqtt.clean_session mqtt.connection_timeout mqtt.keep_alive_interval \
+        mqtt.qosl message_processor_class
+}
+
+testSyslogModule() {
+    genericTestModule 11 syslog name connector.class tasks.max key.converter \
+        value.converter key.converter.schemas.enable \
+        value.converter.schemas.enable kafka.topic syslog.host syslog.port \
+        syslog.structured.data
+}
+
+testSfacctdModule() {
+    genericTestModule 3 sfacctd SFLOW_KAFKA_TOPIC SFLOW_RENORMALIZE \
+        SFLOW_AGGREGATE
+}
+
 #--------------------------------------------------------
 # TEST RESILIENCE
 #--------------------------------------------------------
@@ -232,6 +233,12 @@ testGetSyslogModuleVariables() {
 testDescribeWrongModule() {
     if "${PROZZIE_PREFIX}"/bin/prozzie config --describe wrongModule; then
         ${_FAIL_} '"prozzie config --describe wrongModule must show error"'
+    fi
+}
+
+testWrongOption() {
+    if "${PROZZIE_PREFIX}"/bin/prozzie config --wrongOption; then
+        ${_FAIL_} '"prozzie config --wrongOption must show error"'
     fi
 }
 
@@ -266,6 +273,18 @@ testConfigMustShowHelpIfTryToSetMqttAndSyslogModules() {
     if "${PROZZIE_PREFIX}"/bin/prozzie config syslog kafka.topic myTopic; then
         ${_FAIL_} '"prozzie config syslog kafka.topic myTopic must show help"'
     fi
+}
+
+testEnvFileErrorMessage() {
+    # Delete f2k env files
+    cp "${PROZZIE_PREFIX}"/etc/prozzie/envs/f2k.env "$env_bak"
+    rm -rf "${PROZZIE_PREFIX}"/etc/prozzie/envs/f2k.env
+
+    if "${PROZZIE_PREFIX}"/bin/prozzie config f2k; then
+        ${_FAIL_} '"prozzie config f2k must show error message related with env file"'
+    fi
+
+    cp "$env_bak" "${PROZZIE_PREFIX}"/etc/prozzie/envs/f2k.env
 }
 
 testSetupCancellation() {

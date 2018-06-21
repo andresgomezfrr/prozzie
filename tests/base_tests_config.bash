@@ -14,9 +14,15 @@ genericTestModule() {
     declare -r module_name="$2"
     shift 2
 
-    declare describe_out="$("${PROZZIE_PREFIX}/bin/prozzie" config -d "$module_name" \
-        | grep -v 'Module .*')"
+    declare describe_out="$("${PROZZIE_PREFIX}/bin/prozzie" config "$module_name" \
+        | grep -v '#.*')"
     declare description key
+
+    ${_ASSERT_EQUALS_} '"Incorrect number of arguments"' \
+    ${num_arguments} '$(printf "%s\n" "${describe_out}" | wc -l)'
+
+    describe_out="$("${PROZZIE_PREFIX}/bin/prozzie" config -d "$module_name" \
+        | grep -v 'Module .*')"
 
     ${_ASSERT_EQUALS_} '"Incorrect number of arguments"' \
     ${num_arguments} '$(printf "%s\n" "${describe_out}" | wc -l)'
