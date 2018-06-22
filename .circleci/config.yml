@@ -97,14 +97,14 @@ workflows:
   tests:
     jobs:
       - ubuntu16.04
-      - ubuntu17.10
-      - ubuntu18.04
-      - debian9
-      - debianbuster
+#      - ubuntu17.10
+#      - ubuntu18.04
+#      - debian9
+#      - debianbuster
       - coverage:
           requires:
             - ubuntu16.04
-            - ubuntu17.10
-            - ubuntu18.04
-            - debian9
-            - debianbuster
+#            - ubuntu17.10
+#            - ubuntu18.04
+#            - debian9
+#            - debianbuster
